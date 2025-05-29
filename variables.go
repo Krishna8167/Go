@@ -1,129 +1,90 @@
-// variables for Go .
-
 /*
-bool
+  Go Variables, Types, Constants, and Conditionals – Reference
 
-string
+   Data Types in Go:
+  - Boolean:             bool
+  - String:              string
+  - Integers:            int, int8, int16, int32, int64
+  - Unsigned Integers:   uint, uint8, uint16, uint32, uint64
+  - Aliases:             byte (alias for uint8), rune (alias for int32, used for Unicode)
+  - Floating Points:     float32, float64
+  - Complex Numbers:     complex64, complex128 (rarely used)
 
-int int8 int16 int32 int 64 //whole numbers
-uint uint8 uint16 uint32 uint64 //positive whole number
+   Constants:
+  - Declared using the `const` keyword.
+  - Cannot be changed after declaration.
+  - Cannot use short declaration syntax `:=`.
+  - Types supported: string, character, boolean, numeric.
 
-byte  (alais for uint8)
-rune (alais for int32 {represented a unicode code point})
+   Conditionals:
+  - No parentheses required around conditions in `if` statements.
+  - An optional "initial" statement can be used to declare variables within the scope of the `if`.
 
-float32 float64 // decimal numbers
-
-complex64 complex128 // imaginary numbers (rare)
+    Example:
+    if length := getLength(email); length < 1 {
+        fmt.Println("Email is invalid")
+    }
 */
 
-/*
-constants
-const keyword , and declared just by variables
-constants can't use the ':=' for short declaration
-constants can be character , string, boolean , or numeric
-values.
-as name implies , the value of constant can't be changes
-after it has been declared.
-*/
-
-/*
-Conditionals
-
-if statement in go don't use parentheses arount the condition.
-and preetymuch like any other programming language.
-
-the initial statement of an if block
-
-an if conditional can have an "initial" statement.
-the variable(s) created in the initial statement
-are only defined within the scope of the "if" body
-
-if initial_statment; CONDITION {
-}
-
-Example:
-length := getlength(email)
-if length<1 {
-fmt.Println("Email is invalid")
-}
-
-instead
-
-if length := getlength(email) ;length < 1 {
-fmt.Println("Email is invalid")
-}
-*/
 package main
 
 import "fmt"
 
-/* Declaring a variable
 func main() {
+	// Declaring variables using 'var'
 	var username string
 	var smsSendingLimit float64
-	var costperSMS float64
+	var costPerSMS float64
 	var hasPermission bool
 
-	fmt.Printf(
-		"%v %f %v %q\n",
-		smsSendingLimit,
-		costperSMS,
-		hasPermission,
-		username,
-	)
-}
-*/
-// short variable declaration
-func main() {
-	congrats := "happy birthday!" // declared a empty string
+	fmt.Printf("Limit: %f | Cost/SMS: %f | Permission: %v | Username: %q\n",
+		smsSendingLimit, costPerSMS, hasPermission, username)
+
+	// Declaring and initializing using shorthand ':='
+	congrats := "Happy Birthday!"
 	fmt.Println(congrats)
-	penniesPertext := 3
-	fmt.Printf("the type of penniesPertext is %T\n", penniesPertext)
-	// the above line meant for knowing the format .
 
-	// declaring multiple values on the same line .
-	averageOpenrates, displayMessage := .23, "is the average open rate of your message"
-	fmt.Println(averageOpenrates, displayMessage)
+	penniesPerText := 3
+	fmt.Printf("The type of 'penniesPerText' is %T\n", penniesPerText)
 
-	// some types can be converted the following ways
+	// Declaring multiple variables in a single line
+	averageOpenRate, displayMessage := 0.23, "is the average open rate of your message"
+	fmt.Println(averageOpenRate, displayMessage)
+
+	// Type conversion
 	accountAge := 2.6
 	accountAgeInt := int(accountAge)
 	fmt.Println("Your account has existed for", accountAgeInt, "years")
-	// constants
+
+	// Declaring constants
 	const premiumPlanName = "Premium Plan"
-	const BasicPlanName = "Basic Plan"
+	const basicPlanName = "Basic Plan"
 
-	fmt.Println("plans:", premiumPlanName)
-	fmt.Println("plans:", BasicPlanName)
-	// Constants can be computed so long as the compuataion can happen at compile time
-	const secondInMinute = 60
-	const minuteaInhour = 60
-	const secondsInhour = secondInMinute * minuteaInhour
+	fmt.Println("Plans:", premiumPlanName, "and", basicPlanName)
 
-	fmt.Println("number of seconds in an hour: ", secondsInhour)
+	// Constant expressions (must be resolvable at compile time)
+	const secondsInMinute = 60
+	const minutesInHour = 60
+	const secondsInHour = secondsInMinute * minutesInHour
 
-	//Formatting Strings in Go
-	/* Go follows the printf tradition form the c language.
-	fmt.Printf - prints a formatted string to standard out
-	fmt.Sprintf - Returns the formatted string
+	fmt.Println("Number of seconds in an hour:", secondsInHour)
 
-	Examples :
-	*/
+	// Formatting strings using fmt.Sprintf
 	const name = "Krishna"
 	const openRate = 30.5
 
-	msg := fmt.Sprintf("Hi %s, your open rate is %.1f percent",
-		name, openRate)
+	msg := fmt.Sprintf("Hi %s, your open rate is %.1f%%", name, openRate)
 	fmt.Println(msg)
-	// some conditionals code .
 
+	// Example of conditional logic
 	messageLen := 10
 	maxMessageLen := 20
+
 	fmt.Println("Trying to send a message of length:", messageLen)
 
 	if messageLen <= maxMessageLen {
-		fmt.Println("message Sent")
+		fmt.Println("Message sent.")
 	} else {
-		fmt.Println("Message not sent")
+		fmt.Println("Message not sent.")
 	}
 }
