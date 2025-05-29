@@ -1,108 +1,113 @@
-// Functions.
-// func sub(x int,y int) int     -> is a function signature .
+/*
+   Go Functions – Syntax, Concepts & Examples
+
+  This file demonstrates function concepts in Go, useful for backend, cloud-native, and DevOps engineering.
+
+  ------------------------------------
+   Function Signatures:
+    A function's signature defines the parameter types and return type.
+
+    Syntax:
+      func sub(x int, y int) int  // returns an int after accepting two int arguments
+
+    If multiple parameters share a type:
+      func add(x, y int) int
+
+  ------------------------------------
+   Go vs C Function Declaration Syntax:
+    C:   int (*fp){int (*ff)(int x, int y), int b}
+    Go:  func(func(int, int) int, int) int
+
+    Go is significantly cleaner and more readable.
+
+  ------------------------------------
+   Pass-by-Value:
+    Go passes arguments **by value** by default. Functions receive a **copy**, not a reference.
+
+    Example:
+*/
+
 package main
 
-//import "fmt"
+import (
+	"errors"
+	"fmt"
+)
 
-/*  function to concatinate two string
-func concat(s1 string, s2 string) string {
+// Demonstrating pass-by-value
+func incrementSends(current, toAdd int) int {
+	current += toAdd
+	return current
+}
+
+// ------------------------------------
+//  String Concatenation Function
+
+func concat(s1, s2 string) string {
 	return s1 + s2
 }
-func main() {
-	fmt.Println(concat("Lane", " happey birthday!"))
-	fmt.Println(concat("Elon", " hope that tesla think works out"))
-	fmt.Println(concat("Go ", "is Fantastic!"))
-}
-*/
 
-// if you have multiple paramater you can also write as
-/*   func add(x, y int) int       instead of ->           func(x int, y int) int
-if they are not in order they need to be defined separately.
-*/
+// ------------------------------------
+//  Ignoring Multiple Return Values
 
-// Declaration Syntax
-/* it is less confusing than c
-
-int (*fp){int (*ff)(int x, int y), int b}   -> c
-
-func(func(int, int) int , int) int            -> Go
-*/
-
-/* Variables in Go are passed by value (except for a few data types).
-   "Pass by value" means that when a variable is passed into the function, that function
-   receives a copy of the variable . the function is unable to mutate the caller's data.
-*/
-/*   pass by value example -> when resign the functional return to the variable it gave the desired result.
-func main() {
-	sendsSoFar := 430
-	const sendsToAdd = 25
-	sendsSoFar = incrementSends(sendsSoFar, sendsToAdd)
-	fmt.Println("you've sent", sendsSoFar, "messages")
-}
-
-func incrementSends(sendsSoFar, sendsToAdd int) int {
-	sendsSoFar = sendsSoFar + sendsToAdd
-	return sendsSoFar
-}
-*/
-
-/*  ignoring multiple return values
-
-A function can return a value that the caller doesn't care about .
-We can explicity ignore variables by using an underscore:_
-
-func getPoint() (x int, y int) int {
-return 3,4
-}
-
-ignore y value
-x, _ := getPoint()
-
-*/
-/* Example for ignoring variables .
-func main() {
-	firstName, _ := getnames()
-	fmt.Println("Welcome to party,", firstName)
-}
-
-func getnames() (string, string) {
+func getNames() (string, string) {
 	return "Krishna", "Sharma"
 }
 
-*/
+// ------------------------------------
+//  Named Return Values (Naked Return)
 
-/* Named Return Values 
-
-A return statement without the arguments returns the named return values.
-this is known as a "naked" return . Naked return statements should be used only in short functions. 
-they can harm readability in longer functions. 
-
-func getcoords() (x, y int) {
-// x and y are initialized with zero values 
-
-return // automatically returns x and y
+func getCoordinates() (x, y int) {
+	// x and y are automatically initialized to 0
+	return // Naked return returns x, y
 }
 
-is same as 
+// ------------------------------------
+//  Early Return (Guard Clause)
 
-func getcoords() (int, int) {
-var x int
-var y int
-return x, y
+func divide(dividend, divisor int) (int, error) {
+	if divisor == 0 {
+		return 0, errors.New("cannot divide by zero")
+	}
+	return dividend / divisor, nil
 }
-*/
 
-/*Early return Statements.
+// ------------------------------------
+//  Main Function to Demonstrate All Concepts
 
-Go supports early return from a function, this a powerful feature that can clean up code, especially
-when used as guard clauses.
-Guard clauses levearges the ability to return early from a function(or continue theough a loop)
-to make nested conditionals one-dimensional.
-instead of using ifelse chains, we return early from the function at the end of each conditional block. 
+func main() {
+	// Pass-by-Value Example
+	sendsSoFar := 430
+	const sendsToAdd = 25
+	sendsSoFar = incrementSends(sendsSoFar, sendsToAdd)
+	fmt.Println("You've sent", sendsSoFar, "messages.")
 
-func divide(dividend, divisor int) (int, error} {
-if divisor == 0 {
-     return 0, errors.New("can't divide by zero")
-   }
-return dividend/divisor, nil
+	// String Concatenation
+	fmt.Println(concat("Lane", " Happy Birthday!"))
+	fmt.Println(concat("Elon", " — Hope that Tesla thing works out!"))
+	fmt.Println(concat("Go ", "is Fantastic!"))
+
+	// Ignoring multiple return values
+	firstName, _ := getNames()
+	fmt.Println("Welcome to the party,", firstName)
+
+	// Named Return Values
+	x, y := getCoordinates()
+	fmt.Printf("Coordinates: (%d, %d)\n", x, y)
+
+	// Early Return / Error Handling
+	result, err := divide(10, 2)
+	if err != nil {
+		fmt.Println("Error:", err)
+	} else {
+		fmt.Println("Result of division:", result)
+	}
+
+	// Attempt divide by zero
+	result, err = divide(10, 0)
+	if err != nil {
+		fmt.Println("Error:", err)
+	} else {
+		fmt.Println("Result of division:", result)
+	}
 }
