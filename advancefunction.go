@@ -74,5 +74,23 @@ deferred function are typically used to close database connections, file handler
 
 // defer example -----(please give some)
 
+// Closures :
+A closure is a function that refernces a variables froom outside its own function body
+the function may accessible and assign to the referenced variables.
+
+(...give some examples)
+
+// yes , a closure mutate a variable outside its body.
+// when a variable is enclosed in a closure , the enclosing function has access to the mutable reference
+to the original value.
+
+// Anonymous Functions
+
+are true to form in that they have no name and are useful when defining a function that will only be used once or to create
+a quick closure.
+
+....(give some examples)
+
+
 
 //  */
