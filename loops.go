@@ -1,101 +1,112 @@
 package main
 
-/* the basic loop in go is written in standard c-like syntax:
-for INITIAL; CONDITION, AFTER {
-// DO SOMETHING..
- }
-
-Ex :
-FOR i=0; i< 10; i++ {
-fmt.Println(i)
- }
-// prints 0 through 9
-
-Ex 2: Return cost of batch message send
-func bulkSend(numMessage int) float64 {
-	 totalCost := 0.0
-	for i=0; i<=numMessage ;i++ {
-		totalCost += 1.0 + (0.01 * float64(i))
-	}
-}
-
-// Omitting conditions from a for loop in GO
-loops in go can omit section of a for loop.
-
-for example :
-
-for INITIAL; ; AFTER {                          // CONDITION OMITTED.
-//DO SOMETHING..
-}
-
-EX 3:
-
-func maxMessage(thresh float64) int {
-totalCost := 0.0
-for i = 0; ; i++ {
- totalCost += 1.0 + (0.01 * float64(i))
- if totalCost > thresh {
- return i
-    }
- }
-}
-
-//There is no while loopmin go , most programming language have a concept of a while loop.because go allows for the
-omission of sections of a for loop, a while loop is just a for loop that only has a CONDITION.
-
-for CONDITION {
-//DO SOME STUFF WHILE CONDITION IS TRUE
-}
-
-for example:
-
-plantHeight := 1
-for plantHeight < 5 {
-fmt.Println("still growing! current height:", plantHeight)
-plantHeight++
-}
-fmt.Println("plant has grown to ", plantHeight, "inches")
-
-//Go supports standard modulo operator:
-  ->   7%3  //1
-
-also logical AND , OR operator
-  ->   true && false     // false
-  ->   true || false     // true
-
-  EX 4 :
-  Complete the fizzbuzz function that prints the number 1 to 100 inclusive each on their
-  own line, but substitute multiples of 3 for the text fizz and multiples of 5 for buzz.
-  for multiples of 3 AND 5 print instead fizzbuzz.
-
-
 import "fmt"
 
-func fizzbuzz() {
-	for i := 1; i <= 100; i++ {
-		if i%3 == 0 && i%5 == 0 {
-			fmt.Println("fizzbuzz")
-		} else if i%3 == 0 {
-			fmt.Println("fizz")
-		} else if i%5 == 0 {
-			fmt.Println("buzz")
-		} else {
-			fmt.Println(i)
+// =====================================
+// LOOPS IN GO
+// =====================================
+
+/*
+The basic loop in Go is the `for` loop, written in a C-like syntax:
+
+	for INIT; CONDITION; AFTER {
+		// body
+	}
+*/
+
+func standardLoop() {
+	fmt.Println("Standard Loop:")
+	for i := 0; i < 10; i++ {
+		fmt.Print(i, " ")
+	}
+	fmt.Println("\n")
+}
+
+// =====================================
+// BULK MESSAGE COST CALCULATION
+// =====================================
+
+func bulkSend(numMessages int) float64 {
+	totalCost := 0.0
+	for i := 0; i <= numMessages; i++ {
+		totalCost += 1.0 + (0.01 * float64(i)) // increasing cost with each message
+	}
+	return totalCost
+}
+
+// =====================================
+// OMITTING CONDITION (INFINITE UNTIL BREAK)
+// =====================================
+
+func maxMessages(thresh float64) int {
+	totalCost := 0.0
+	for i := 0; ; i++ {
+		totalCost += 1.0 + (0.01 * float64(i))
+		if totalCost > thresh {
+			return i
 		}
 	}
 }
 
+// =====================================
+// WHILE-STYLE LOOP IN GO
+// =====================================
+
+func simulatePlantGrowth() {
+	height := 1
+	for height < 5 {
+		fmt.Println("Still growing! Current height:", height)
+		height++
+	}
+	fmt.Println("Plant has grown to", height, "inches.\n")
+}
+
+// =====================================
+// FIZZBUZZ PROBLEM
+// =====================================
+
+func fizzBuzz() {
+	fmt.Println("FizzBuzz:")
+	for i := 1; i <= 100; i++ {
+		switch {
+		case i%3 == 0 && i%5 == 0:
+			fmt.Println("fizzbuzz")
+		case i%3 == 0:
+			fmt.Println("fizz")
+		case i%5 == 0:
+			fmt.Println("buzz")
+		default:
+			fmt.Println(i)
+		}
+	}
+	fmt.Println()
+}
+
+// =====================================
+// CONTINUE STATEMENT
+// =====================================
+
+func skipEvens() {
+	fmt.Println("Odd numbers from 0 to 10:")
+	for i := 0; i <= 10; i++ {
+		if i%2 == 0 {
+			continue // skip even numbers
+		}
+		fmt.Println(i)
+	}
+}
+
+// =====================================
+// MAIN FUNCTION
+// =====================================
+
 func main() {
-	fizzbuzz()
-}
+	standardLoop()
 
-// continue keyword stops the current iteration of a loop and continues to the next iteration.
-continue is a powerful way to use the "guard clause" pattern within loops.
+	fmt.Println("Total Cost for 10 Messages:", bulkSend(10))
+	fmt.Println("Max messages before reaching ₹15.0:", maxMessages(15.0), "\n")
 
-for i := 0; i < 10; i++ {
-if i % 2 ==0 {
-continue
+	simulatePlantGrowth()
+	fizzBuzz()
+	skipEvens()
 }
-}
-
-*/
