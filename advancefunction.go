@@ -1,96 +1,207 @@
 package main
 
+import (
+	"fmt"
+)
+
 /*
-// function as data
-For example :
+📘 THEORY: FUNCTIONS IN GO
+
+Go treats functions as *first-class citizens*. This means:
+- You can assign functions to variables
+- Pass them as arguments to other functions
+- Return them from functions
+
+Functions are *values* — they can be stored, manipulated, and passed around like data.
+Go also supports powerful features like:
+- Higher-order functions
+- Currying (returning functions)
+- Closures (functions that capture outer scope variables)
+- Defer (delayed execution)
+- Anonymous functions (functions without names)
+*/
+
+// ===============================
+// 1. HIGHER-ORDER FUNCTIONS
+// ===============================
+
+/*
+A higher-order function is one that either:
+- Takes a function as an argument, or
+- Returns a function as its result
+*/
 
 func add(x, y int) int {
-return x+y
+	return x + y
 }
 
 func mul(x, y int) int {
-return x*y
+	return x * y
 }
 
-// aggregate applies the given math function to the first 3 inputs
-func aggregate(a, b, c int, arthimetic func(int, int) int) int {
-return arithematic(arithmetic(a,b), c)
+// aggregate applies a given math function to three inputs
+func aggregate(a, b, c int, operation func(int, int) int) int {
+	return operation(operation(a, b), c)
 }
 
-func main() {
-fmt.Println(aggregate(2,3,4, add))
-// prints 9
-fmt.Println(aggregate(2,3,4, mul))
-// prints 24
+func higherOrderExample() {
+	fmt.Println("Sum:", aggregate(2, 3, 4, add))     // 9
+	fmt.Println("Product:", aggregate(2, 3, 4, mul)) // 24
 }
 
-// ORDER FUNCTIONS ?
-dynamically creating functions and passing them around as variables adds unecessary complexity.
-most of the time, this is right
+// ===============================
+// 2. FUNCTION CURRYING
+// ===============================
 
-however, when functions as values make a lot of sense. some of these includes
-HTTP API HANDLERS
-PUB/SUB HANDLERS
-ONCLICK CALLBACKS
+/*
+Currying is the process of returning a function from a function,
+often with some pre-bound arguments or logic.
 
-NORMAL functions are first class functions, but the above aggregator function is a higher-Order function.
-
-// Currying
-Function currying is the practice of writing a function that takes a function(or functions) as input
-and returns a new function.
-
-for ex:
-func main() {
-squareFunc := selfMath(multiply)
-doubleFunc := selfMath(add)
-
-fmt.Println(squareFunc(5))
-// prints 25
-
-fmt.Println(squareFunc(5))
-// prints 10
-}
+Useful for:
+- Configurable behavior
+- Partial application
+- Code reuse
+*/
 
 func multiply(x, y int) int {
-return x*y
+	return x * y
 }
 
-func add(x, y int) int {
-return x +y
+func addAgain(x, y int) int {
+	return x + y
 }
 
-func selMath(mathFunc func(int, int) int) func (int) int {
-return func(x int) int {
-return mathFunc(x, x)
+// curry-style helper
+func selfMath(mathFunc func(int, int) int) func(int) int {
+	return func(x int) int {
+		return mathFunc(x, x)
+	}
 }
+
+func curryingExample() {
+	square := selfMath(multiply)
+	double := selfMath(addAgain)
+
+	fmt.Println("Square of 5:", square(5)) // 25
+	fmt.Println("Double of 5:", double(5)) // 10
 }
-// the defer keyword is a fairly unique feature of Go. It allows a function to be executed automatically
-just before its enclosing function returns
 
-the deferred call's arguments are evaluated immediately, but the function call is not executed until the surrounding
-function returns.
+// ===============================
+// 3. DEFER
+// ===============================
 
-deferred function are typically used to close database connections, file handlers and the like.
+/*
+`defer` is used to schedule a function call to run *after* the current function returns.
 
-// defer example -----(please give some)
+Use-cases:
+- Cleanup (e.g., close files, release locks)
+- Tracing and logging
+- Recovering from panics
 
-// Closures :
-A closure is a function that refernces a variables froom outside its own function body
-the function may accessible and assign to the referenced variables.
+Multiple `defer` calls run in LIFO (Last-In-First-Out) order.
+*/
 
-(...give some examples)
+func deferExample() {
+	defer fmt.Println("This prints last.")
+	fmt.Println("This prints first.")
+}
 
-// yes , a closure mutate a variable outside its body.
-// when a variable is enclosed in a closure , the enclosing function has access to the mutable reference
-to the original value.
+func multiDefer() {
+	defer fmt.Println("defer 1")
+	defer fmt.Println("defer 2")
+	defer fmt.Println("defer 3")
+	fmt.Println("main logic")
+}
 
-// Anonymous Functions
+// ===============================
+// 4. CLOSURES
+// ===============================
 
-are true to form in that they have no name and are useful when defining a function that will only be used once or to create
-a quick closure.
+/*
+A closure is a function that "remembers" and can manipulate variables from outside its own body.
 
-....(give some examples)
+Closures are powerful for:
+- Encapsulating state
+- Creating factories and counters
+- Writing concurrent code
+*/
 
+func closureExample() {
+	counter := 0
+	increment := func() {
+		counter++
+		fmt.Println("Counter:", counter)
+	}
 
+	increment() // 1
+	increment() // 2
+}
 
-//  */
+// closure returning a function
+func counterClosure() func() int {
+	count := 0
+	return func() int {
+		count++
+		return count
+	}
+}
+
+func closureReturningFunction() {
+	next := counterClosure()
+	fmt.Println(next()) // 1
+	fmt.Println(next()) // 2
+	fmt.Println(next()) // 3
+}
+
+// ===============================
+// 5. ANONYMOUS FUNCTIONS
+// ===============================
+
+/*
+Anonymous functions have no name.
+
+Useful when:
+- You need a quick function once
+- You want to immediately invoke a function
+- You're passing logic as a parameter
+*/
+
+func anonymousFunctionExample() {
+	// Immediately Invoked Function Expression (IIFE)
+	func(msg string) {
+		fmt.Println("Hello,", msg)
+	}("World")
+
+	// Function assigned to a variable
+	square := func(x int) int {
+		return x * x
+	}
+	fmt.Println("Square of 6 is:", square(6))
+}
+
+// ===============================
+// MAIN FUNCTION
+// ===============================
+
+func main() {
+	fmt.Println("=== Higher-Order Functions ===")
+	higherOrderExample()
+
+	fmt.Println("\n=== Currying ===")
+	curryingExample()
+
+	fmt.Println("\n=== Defer Keyword ===")
+	deferExample()
+
+	fmt.Println("\n=== Multiple Defers ===")
+	multiDefer()
+
+	fmt.Println("\n=== Closures ===")
+	closureExample()
+
+	fmt.Println("\n=== Closure Returning Function ===")
+	closureReturningFunction()
+
+	fmt.Println("\n=== Anonymous Functions ===")
+	anonymousFunctionExample()
+}
