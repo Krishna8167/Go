@@ -1,174 +1,185 @@
+package main
+
+import (
+	"fmt"
+	"math"
+)
+
 /*
-Interfaces are collection of mathod signatures .
-A type "implements" an interface if it has all of the methods of the given interfaces defined on it
+📘 THEORY: INTERFACES IN GO
 
-type shape interface  {
-area() float64
-perimeter() float64
+An **interface** in Go is a type that defines a set of method signatures. Any type that implements all the methods in an interface is said to "satisfy" that interface — *implicitly*, without using an `implements` keyword.
+
+✅ Benefits:
+- Polymorphism without inheritance
+- Flexible APIs
+- Decoupling dependencies
+
+✅ Core Concepts:
+- Implicit implementation
+- Multiple interface implementation
+- Type assertions
+- Type switches
+*/
+
+// ===============================
+// 1. Basic Interface: Shape
+// ===============================
+type shape interface {
+	area() float64
+	perimeter() float64
 }
-// for rectangle shape
+
 type rect struct {
-width,height float64
+	width, height float64
 }
 
-type (r rect) area() float64 {
-return r.width * r.height
+func (r rect) area() float64 {
+	return r.width * r.height
 }
 
-type (r rect) perimeter() float64 {
-return 2*r.width + 2*r.height
+func (r rect) perimeter() float64 {
+	return 2*r.width + 2*r.height
 }
-
-// for circle shape
 
 type circle struct {
-radius float64
+	radius float64
 }
 
-func(c circle) area() float64 {
-return math.Pi * c.radius * c.radius
+func (c circle) area() float64 {
+	return math.Pi * c.radius * c.radius
 }
 
-func(c circle) perimeter() float64 {
-return 2*math.Pi * c.radius
+func (c circle) perimeter() float64 {
+	return 2 * math.Pi * c.radius
 }
 
-// Interfaces are implemented implicity
+func interfaceExample() {
+	var s shape = rect{10, 5}
+	fmt.Println("Area of rectangle:", s.area())
+	fmt.Println("Perimeter of rectangle:", s.perimeter())
 
-there is no "implements" keyword
-you may add method to the type and in the process be unknowingly implementing
-various interfaces, and that's okay.
+	s = circle{7}
+	fmt.Println("Area of circle:", s.area())
+	fmt.Println("Perimeter of circle:", s.perimeter())
+}
 
-//Multiple Interfaces
-
-a type can implement any number of interfaces in GO .
-for ex :, interfaces{}, is always implemented by every type because it has no requirements.
-
+// ===============================
+// 2. Multiple Interfaces
+// ===============================
 type expense interface {
-cost() float64
+	cost() float64
 }
 
 type printer interface {
-print()
+	print()
 }
 
 type email struct {
-isSubscibred bool
-body string
+	isSubscribed bool
+	body         string
+	toAddress    string
 }
 
-func print(p,printer) {
-p.print()
+type sms struct {
+	isSubscribed  bool
+	body          string
+	toPhoneNumber string
+}
+
+func (e email) cost() float64 {
+	if !e.isSubscribed {
+		return float64(len(e.body)) * 0.05
+	}
+	return float64(len(e.body)) * 0.01
+}
+
+func (s sms) cost() float64 {
+	if !s.isSubscribed {
+		return float64(len(s.body)) * 0.03
+	}
+	return float64(len(s.body)) * 0.01
+}
+
+func (e email) print() {
+	fmt.Println("Email to:", e.toAddress, "Body:", e.body)
+}
+
+func (s sms) print() {
+	fmt.Println("SMS to:", s.toPhoneNumber, "Body:", s.body)
+}
+
+func multiInterfaceExample() {
+	e := email{true, "Hello there!", "test@example.com"}
+	s := sms{false, "Verify your code", "+9188888888"}
+
+	test(e, e)
+	test(s, s)
 }
 
 func test(e expense, p printer) {
-fmt.Println("Printing with cost: $%.2f ...\n", e.cost())
-p.print()
+	fmt.Printf("Cost: $%.2f\n", e.cost())
+	p.print()
 }
 
-
-// Name your Interface Argument
-
-type copier interface {
-Copy(sourceFile string, destinationFile string) (bytesCopied int)
-}
-
-// type assertions in Go
-
-when working with interfaces in Go, every once-in-awhile you'll need access to the underlying type of an interface value.
-You can cast an interface to its underlying type using a type assertion.package startgo1
-
-type shape interface {
-area() float64
-}
- type circle struct {
- radius float64
- }
-
- // "c" is the new circle cast from "s"
- // which is an instance of a shape.
- // "ok" is a bool that is true if s was a circle
- // or false if s isn't a circle
- c,ok := s.(circle)  ......................................................................................................
-*/
-
-/*
-	 Package main
-
-	 import ("fmt")
-
-	 func getExpenseReport(e expense) (string, float64) {
-			em , ok = e.(email)
-			if ok {
-				return em.toaddress, em.cost()
-		}
-		s, ok = e.(sms)
-		if ok {
-				return s.toaddress, s.cost()
-		}
-		return "",0.0
-	 }
-
-	 func (e email) cost() float64 {
-		if !e.isSubscibed {
-			return float64(len(e.body)) * .05
-		}
-		return float64(len(e.body)) * .01
-	 }
-	  func (s sms) cost() float64 {
-		if !e.isSubscibed {
-			return float64(len(s.body)) * .01
-		}
-		return float64(len(s.body)) * .03
-	 }
-
-	 type expense interface {
-		cost() float64
-	 }
-
-	 type email struct {
-		isSubscribed bool
-		body string
-		toaddress string
-	 }
-
-	 type sms struct {
-		isSubscribed bool
-		body string
-		tophonenumber string
-	 }
-
-// Type Switches
-a type switch is similar to a regular switch statement, but the cases specify types instead of values.
-
-	func printNumericValues(num interface{}) {
-		switch v := num.(type){
-	      case int :
-		   fmt.Printf("%T\n",v)
-		  case string :
-		   fmt.Printf("%T\n",v)
-		  default :
-		   fmt.Printf("%T\n",v)
-		}
+// ===============================
+// 3. Type Assertions
+// ===============================
+func getExpenseReport(e expense) (string, float64) {
+	if em, ok := e.(email); ok {
+		return em.toAddress, em.cost()
 	}
-		func main() {
-		printNumericValues(1)  // int
-
-		printNumericValues("1") // string
-
-		printNumericValues(struct{}{}) // struct
+	if s, ok := e.(sms); ok {
+		return s.toPhoneNumber, s.cost()
 	}
+	return "", 0.0
+}
 
-	// using switch case for the last program
-	 func getExpenseReport(e expense) (string, float64) {
-		switch v := e.(type){
-		      case email:
-		      return v.toaddress, v.cost()
-			  case sms:
-		      return v.to[honenumber], v.cost()
-			  default:
-		      return "", 0.0
-			  }
-	 }
-*/
-package main
+// ===============================
+// 4. Type Switch
+// ===============================
+func getExpenseReportSwitch(e expense) (string, float64) {
+	switch v := e.(type) {
+	case email:
+		return v.toAddress, v.cost()
+	case sms:
+		return v.toPhoneNumber, v.cost()
+	default:
+		return "", 0.0
+	}
+}
+
+func printNumericValues(num interface{}) {
+	switch v := num.(type) {
+	case int:
+		fmt.Println("It's an int:", v)
+	case string:
+		fmt.Println("It's a string:", v)
+	default:
+		fmt.Printf("Unknown type: %T\n", v)
+	}
+}
+
+// ===============================
+// MAIN
+// ===============================
+func main() {
+	fmt.Println("=== Interface Shape ===")
+	interfaceExample()
+
+	fmt.Println("\n=== Multiple Interfaces ===")
+	multiInterfaceExample()
+
+	fmt.Println("\n=== Type Assertion Report ===")
+	addr, cost := getExpenseReport(email{false, "Testing assertion", "dev@example.com"})
+	fmt.Println("Sent to:", addr, "Cost:", cost)
+
+	fmt.Println("\n=== Type Switch Report ===")
+	addr, cost = getExpenseReportSwitch(sms{false, "OTP Code", "+9177777777"})
+	fmt.Println("Sent to:", addr, "Cost:", cost)
+
+	fmt.Println("\n=== Type Switch on Values ===")
+	printNumericValues(123)
+	printNumericValues("abc")
+	printNumericValues(true)
+}
