@@ -37,8 +37,6 @@ This repository is organized into logical folders and files, covering:
 - Generics (Go 1.18+)
 - Go Modules
 
-//To be included ..
-
 ### 🗂️ Data Structures & Algorithms
 - Arrays, Slices, Maps
 - Linked Lists, Stacks, Queues
