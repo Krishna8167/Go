@@ -63,6 +63,4 @@ This repository is organized into logical folders and files, covering:
 
 ---
 
-## 📁 Folder Structure
-
 
